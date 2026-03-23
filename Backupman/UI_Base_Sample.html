@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIGHT CITY // INTERFACE v2.4.7</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+  :root {
+    --yellow: #f5c400;
+    --yellow-dim: #c49b00;
+    --cyan: #00e5ff;
+    --cyan-dim: #00a8bc;
+    --red: #ff003c;
+    --red-dim: #cc0030;
+    --bg-dark: #060a0d;
+    --bg-mid: #0c1318;
+    --bg-panel: #0f1a20;
+    --bg-card: #111e26;
+    --border: rgba(245,196,0,0.25);
+    --border-bright: rgba(245,196,0,0.7);
+    --text-main: #d4e8f0;
+    --text-dim: #6a8a99;
+    --text-mono: #8ecfde;
+    --scan-speed: 6s;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* SCANLINES OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* NOISE TEXTURE */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.3;
+  }
+
+  /* ── TOP NAV BAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 52px;
+    background: linear-gradient(90deg, var(--bg-dark), var(--bg-mid));
+    border-bottom: 1px solid var(--border-bright);
+    position: relative;
+    z-index: 100;
+  }
+
+  .topbar::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0; right: 0;
+    height: 1px;
+    background: var(--yellow);
+    box-shadow: 0 0 12px var(--yellow), 0 0 30px rgba(245,196,0,0.3);
+  }
+
+  .logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 4px;
+    color: var(--yellow);
+    text-shadow: 0 0 20px var(--yellow), 0 0 40px rgba(245,196,0,0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-diamond {
+    width: 20px; height: 20px;
+    background: var(--yellow);
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px var(--yellow);
+    animation: pulse-diamond 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-diamond {
+    0%, 100% { box-shadow: 0 0 10px var(--yellow); }
+    50% { box-shadow: 0 0 20px var(--yellow), 0 0 40px rgba(245,196,0,0.5); }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-links li a {
+    display: block;
+    padding: 0 22px;
+    height: 52px;
+    line-height: 52px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    border-right: 1px solid var(--border);
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .nav-links li a::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--yellow);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+
+  .nav-links li a:hover,
+  .nav-links li a.active {
+    color: var(--yellow);
+    background: rgba(245,196,0,0.05);
+  }
+
+  .nav-links li a:hover::before,
+  .nav-links li a.active::before {
+    transform: scaleX(1);
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 6px var(--cyan);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .time-display {
+    color: var(--yellow);
+    letter-spacing: 2px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .shell {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    grid-template-rows: 1fr;
+    height: calc(100vh - 52px);
+  }
+
+  /* ── LEFT SIDEBAR ── */
+  .sidebar {
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 2px; height: 100%;
+    background: linear-gradient(180deg, transparent, var(--yellow), transparent);
+    opacity: 0.4;
+    animation: sidebar-glow 4s ease-in-out infinite;
+  }
+
+  @keyframes sidebar-glow {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.7; }
+  }
+
+  .sidebar-header {
+    padding: 20px 20px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .sidebar-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 2px;
+  }
+
+  /* USER CARD */
+  .user-card {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .user-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 30%, rgba(245,196,0,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .avatar-frame {
+    width: 56px; height: 56px;
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .avatar {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, #1a2e3d, #0d1e28);
+    border: 2px solid var(--yellow);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--yellow);
+    text-shadow: 0 0 10px var(--yellow);
+    clip-path: polygon(10px 0%, calc(100% - 0px) 0%, 100% 10px, 100% 100%, calc(100% - 10px) 100%, 0% 100%, 0% 10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar::after {
+    content: '';
+    position: absolute;
+    top: -100%; left: -100%;
+    width: 300%; height: 300%;
+    background: linear-gradient(135deg, transparent 30%, rgba(245,196,0,0.15) 50%, transparent 70%);
+    animation: avatar-shine 3s ease-in-out infinite;
+  }
+
+  @keyframes avatar-shine {
+    0% { transform: translate(-100%, -100%); }
+    100% { transform: translate(100%, 100%); }
+  }
+
+  .user-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+  }
+
+  .user-handle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    margin-bottom: 12px;
+  }
+
+  .stat-bars { display: flex; flex-direction: column; gap: 6px; }
+
+  .stat-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stat-bar-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    width: 32px;
+    flex-shrink: 0;
+  }
+
+  .stat-bar-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-bar-fill {
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    background: var(--yellow);
+    box-shadow: 0 0 6px var(--yellow);
+    animation: bar-load 1.5s ease-out both;
+  }
+
+  .stat-bar-fill.cyan { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+  .stat-bar-fill.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+  @keyframes bar-load {
+    from { width: 0 !important; }
+  }
+
+  .stat-bar-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    width: 24px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* MENU LIST */
+  .menu-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+
+  .menu-list::-webkit-scrollbar { width: 3px; }
+  .menu-list::-webkit-scrollbar-track { background: transparent; }
+  .menu-list::-webkit-scrollbar-thumb { background: var(--yellow-dim); }
+
+  .menu-section-label {
+    padding: 12px 20px 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+    position: relative;
+  }
+
+  .menu-item:hover,
+  .menu-item.active {
+    background: rgba(245,196,0,0.07);
+    border-left-color: var(--yellow);
+  }
+
+  .menu-item.active .menu-icon { color: var(--yellow); }
+  .menu-item.active .menu-text { color: var(--yellow); }
+
+  .menu-icon {
+    font-size: 14px;
+    color: var(--text-dim);
+    width: 18px;
+    text-align: center;
+  }
+
+  .menu-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    text-transform: uppercase;
+    flex: 1;
+  }
+
+  .menu-badge {
+    background: var(--red);
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 0;
+    box-shadow: 0 0 6px var(--red);
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    background: var(--bg-mid);
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .main::-webkit-scrollbar { width: 3px; }
+  .main::-webkit-scrollbar-thumb { background: var(--border-bright); }
+
+  /* CONTENT HEADER */
+  .content-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .content-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0;
+    width: 120px; height: 2px;
+    background: var(--yellow);
+    box-shadow: 0 0 8px var(--yellow);
+  }
+
+  .page-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 28px;
+    color: var(--yellow);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px rgba(245,196,0,0.4);
+    line-height: 1;
+  }
+
+  .page-subtitle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  .header-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: -100%; left: -100%;
+    width: 300%; height: 300%;
+    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+    transition: transform 0.4s;
+  }
+
+  .btn:hover::before { transform: translate(50%, 50%); }
+
+  .btn-primary {
+    background: var(--yellow);
+    color: #000;
+    box-shadow: 0 0 16px rgba(245,196,0,0.4);
+  }
+
+  .btn-primary:hover {
+    background: #ffe033;
+    box-shadow: 0 0 24px rgba(245,196,0,0.6);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--yellow);
+    border-color: var(--yellow);
+    background: rgba(245,196,0,0.05);
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid rgba(255,0,60,0.4);
+  }
+
+  .btn-danger:hover {
+    background: rgba(255,0,60,0.1);
+    box-shadow: 0 0 12px rgba(255,0,60,0.3);
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--border-bright); }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .stat-card:hover::before { opacity: 0.8; }
+
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--yellow);
+    text-shadow: 0 0 12px rgba(245,196,0,0.4);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-value.cyan { color: var(--cyan); text-shadow: 0 0 12px rgba(0,229,255,0.4); }
+  .stat-value.red { color: var(--red); text-shadow: 0 0 12px rgba(255,0,60,0.4); }
+
+  .stat-delta {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--cyan);
+  }
+
+  .stat-delta.neg { color: var(--red); }
+
+  /* TWO COLUMN */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* PANEL */
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,0,0,0.2);
+  }
+
+  .panel-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--yellow);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-title::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--yellow);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--yellow);
+  }
+
+  .panel-body { padding: 16px 18px; }
+
+  /* MISSION LIST */
+  .mission-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .mission-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .mission-item:hover {
+    border-color: var(--border);
+    background: rgba(245,196,0,0.04);
+  }
+
+  .mission-item.priority {
+    border-left: 2px solid var(--red);
+  }
+
+  .mission-item.active {
+    border-left: 2px solid var(--yellow);
+    background: rgba(245,196,0,0.06);
+  }
+
+  .mission-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .mission-dot.urgent { background: var(--red); box-shadow: 0 0 6px var(--red); animation: blink 1s infinite; }
+  .mission-dot.active { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+  .mission-dot.done { background: var(--cyan); box-shadow: 0 0 4px var(--cyan); }
+
+  .mission-content { flex: 1; min-width: 0; }
+
+  .mission-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mission-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .mission-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    padding: 2px 6px;
+    background: rgba(255,0,60,0.15);
+    color: var(--red);
+    border: 1px solid rgba(255,0,60,0.3);
+    flex-shrink: 0;
+  }
+
+  .mission-tag.side { background: rgba(0,229,255,0.1); color: var(--cyan); border-color: rgba(0,229,255,0.3); }
+
+  /* ACTIVITY LOG */
+  .log-list { display: flex; flex-direction: column; gap: 0; }
+
+  .log-item {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(245,196,0,0.07);
+    animation: log-in 0.3s ease both;
+  }
+
+  @keyframes log-in {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .log-time {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    width: 45px;
+  }
+
+  .log-bar {
+    width: 2px;
+    background: var(--border);
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .log-bar::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: -3px;
+    width: 8px; height: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--text-dim);
+    border-radius: 50%;
+  }
+
+  .log-bar.warn::after { border-color: var(--red); background: rgba(255,0,60,0.2); }
+  .log-bar.info::after { border-color: var(--cyan); background: rgba(0,229,255,0.1); }
+  .log-bar.ok::after { border-color: var(--yellow); background: rgba(245,196,0,0.15); }
+
+  .log-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    color: var(--text-main);
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  .log-text span { color: var(--yellow); }
+  .log-text span.cyan { color: var(--cyan); }
+  .log-text span.red { color: var(--red); }
+
+  /* TERMINAL PANEL */
+  .terminal {
+    background: #050c10;
+    border: 1px solid rgba(0,229,255,0.2);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+  }
+
+  .terminal::before {
+    content: '> NETWATCH TERMINAL v4.2.1 // SECURE CONNECTION ESTABLISHED';
+    display: block;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,229,255,0.1);
+  }
+
+  .terminal-line { 
+    margin-bottom: 4px;
+    animation: type-in 0.1s ease both;
+  }
+
+  @keyframes type-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .terminal-line.cmd { color: var(--yellow); }
+  .terminal-line.err { color: var(--red); }
+  .terminal-line.ok { color: #00ff88; }
+
+  .terminal-cursor {
+    display: inline-block;
+    width: 8px; height: 12px;
+    background: var(--cyan);
+    animation: cursor-blink 0.8s step-end infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* CHART AREA */
+  .chart-container {
+    position: relative;
+    height: 140px;
+    overflow: hidden;
+  }
+
+  .chart-grid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+  }
+
+  .chart-grid-line {
+    border-bottom: 1px solid rgba(245,196,0,0.07);
+  }
+
+  .chart-bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    padding: 0 4px;
+  }
+
+  .chart-bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  .chart-bar {
+    width: 100%;
+    background: linear-gradient(180deg, var(--yellow), rgba(245,196,0,0.4));
+    box-shadow: 0 0 8px rgba(245,196,0,0.3);
+    position: relative;
+    animation: bar-rise 1s ease-out both;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .chart-bar.cyan {
+    background: linear-gradient(180deg, var(--cyan), rgba(0,229,255,0.3));
+    box-shadow: 0 0 8px rgba(0,229,255,0.3);
+  }
+
+  @keyframes bar-rise {
+    from { transform: scaleY(0); transform-origin: bottom; }
+    to { transform: scaleY(1); transform-origin: bottom; }
+  }
+
+  .chart-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  /* MAP / MINIMAP */
+  .mini-map {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #070e14;
+    border: 1px solid rgba(0,229,255,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .map-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  .map-block {
+    position: absolute;
+    background: rgba(245,196,0,0.15);
+    border: 1px solid rgba(245,196,0,0.3);
+  }
+
+  .map-pin {
+    position: absolute;
+    width: 10px; height: 10px;
+    background: var(--yellow);
+    transform: rotate(45deg);
+    box-shadow: 0 0 12px var(--yellow), 0 0 24px rgba(245,196,0,0.4);
+    animation: ping 2s ease-in-out infinite;
+  }
+
+  @keyframes ping {
+    0% { box-shadow: 0 0 0 0 rgba(245,196,0,0.7), 0 0 12px var(--yellow); }
+    70% { box-shadow: 0 0 0 16px transparent, 0 0 12px var(--yellow); }
+    100% { box-shadow: 0 0 0 0 transparent, 0 0 12px var(--yellow); }
+  }
+
+  .map-route {
+    position: absolute;
+    height: 1px;
+    background: var(--cyan);
+    box-shadow: 0 0 4px var(--cyan);
+    transform-origin: left center;
+  }
+
+  .map-threat {
+    position: absolute;
+    width: 7px; height: 7px;
+    border: 1px solid var(--red);
+    background: rgba(255,0,60,0.2);
+    transform: rotate(45deg);
+    box-shadow: 0 0 6px var(--red);
+    animation: blink 0.8s ease-in-out infinite;
+  }
+
+  .map-label {
+    position: absolute;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── RIGHT PANEL ── */
+  .right-panel {
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .rp-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 3px;
+  }
+
+  .rp-section {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rp-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  /* THREAT LEVEL */
+  .threat-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .threat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--red);
+    text-shadow: 0 0 20px rgba(255,0,60,0.5);
+    line-height: 1;
+  }
+
+  .threat-info { flex: 1; }
+
+  .threat-level-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--red);
+    text-transform: uppercase;
+  }
+
+  .threat-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+  }
+
+  .threat-segments {
+    display: flex;
+    gap: 3px;
+    margin-top: 8px;
+  }
+
+  .threat-seg {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,0,60,0.15);
+    border: 1px solid rgba(255,0,60,0.2);
+  }
+
+  .threat-seg.filled {
+    background: var(--red);
+    box-shadow: 0 0 4px var(--red);
+  }
+
+  /* CONTACTS */
+  .contact-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .contact-item:hover {
+    border-color: var(--border);
+    background: rgba(245,196,0,0.04);
+  }
+
+  .contact-avatar {
+    width: 32px; height: 32px;
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--cyan);
+    flex-shrink: 0;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  }
+
+  .contact-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-main);
+  }
+
+  .contact-role {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+  }
+
+  .contact-status {
+    margin-left: auto;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .contact-status.online { background: #00ff88; box-shadow: 0 0 6px #00ff88; }
+  .contact-status.away { background: var(--yellow); box-shadow: 0 0 4px var(--yellow); }
+  .contact-status.offline { background: var(--text-dim); }
+
+  /* INVENTORY */
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .inv-slot {
+    aspect-ratio: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .inv-slot:hover { border-color: var(--yellow); background: rgba(245,196,0,0.06); }
+  .inv-slot.empty { opacity: 0.3; }
+
+  .inv-slot .inv-count {
+    position: absolute;
+    bottom: 2px; right: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    color: var(--yellow);
+  }
+
+  .inv-slot .inv-rarity {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .inv-slot .inv-rarity.legendary { background: #ff9800; box-shadow: 0 0 4px #ff9800; }
+  .inv-slot .inv-rarity.epic { background: #9c27b0; box-shadow: 0 0 4px #9c27b0; }
+  .inv-slot .inv-rarity.rare { background: var(--cyan); box-shadow: 0 0 4px var(--cyan); }
+  .inv-slot .inv-rarity.common { background: var(--text-dim); }
+
+  /* SCAN EFFECT */
+  .scan-line {
+    position: fixed;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0,229,255,0.15), transparent);
+    pointer-events: none;
+    z-index: 9997;
+    animation: scan var(--scan-speed) linear infinite;
+  }
+
+  @keyframes scan {
+    0% { top: -2px; }
+    100% { top: 100vh; }
+  }
+
+  /* GLITCH ANIMATION */
+  @keyframes glitch {
+    0%, 90%, 100% { transform: none; clip-path: none; }
+    91% { transform: skewX(-2deg); clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); color: var(--cyan); }
+    93% { transform: skewX(2deg); clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); color: var(--red); }
+    95% { transform: none; clip-path: none; }
+  }
+
+  .glitch { animation: glitch 5s ease-in-out infinite; }
+
+  /* BOTTOM BAR */
+  .bottombar {
+    grid-column: 1 / -1;
+    height: 28px;
+    background: var(--bg-dark);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 24px;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 100;
+  }
+
+  .bottombar-item {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .bottombar-item span { color: var(--yellow); }
+
+  /* FLICKER ON LOAD */
+  @keyframes flicker-in {
+    0% { opacity: 0; }
+    10% { opacity: 0.8; }
+    15% { opacity: 0.1; }
+    20% { opacity: 0.9; }
+    25% { opacity: 0.4; }
+    30% { opacity: 1; }
+    100% { opacity: 1; }
+  }
+
+  .shell { animation: flicker-in 0.8s ease both; }
+
+  /* PROGRESS RINGS */
+  .ring-container {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .ring-wrap { text-align: center; }
+
+  .ring-svg { transform: rotate(-90deg); }
+
+  .ring-bg { fill: none; stroke: rgba(245,196,0,0.1); }
+  .ring-fg { fill: none; stroke-linecap: butt; transition: stroke-dashoffset 1.5s ease; }
+
+  .ring-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .ring-pos { position: relative; display: inline-block; }
+
+  /* DATA FIELD */
+  .data-field {
+    margin-bottom: 10px;
+  }
+
+  .df-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .df-value {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-main);
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--yellow);
+    letter-spacing: 1px;
+  }
+
+  /* SCROLLBAR GLOBAL */
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(245,196,0,0.3); }
+</style>
+</head>
+<body>
+
+<div class="scan-line"></div>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-diamond"></div>
+    NIGHT CITY OS
+  </div>
+  <nav>
+    <ul class="nav-links">
+      <li><a href="#" class="active">DASHBOARD</a></li>
+      <li><a href="#">MISSIONS</a></li>
+      <li><a href="#">NETRUN</a></li>
+      <li><a href="#">MARKET</a></li>
+      <li><a href="#">CYBERWARE</a></li>
+      <li><a href="#">ARCHIVE</a></li>
+    </ul>
+  </nav>
+  <div class="topbar-right">
+    <div class="status-dot"></div>
+    <span>SECURE LINK ACTIVE</span>
+    <span class="time-display" id="clock">03:47:22</span>
+  </div>
+</header>
+
+<!-- MAIN SHELL -->
+<div class="shell">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-label">// OPERATIVE</div>
+      <div class="sidebar-title">V // MERC</div>
+    </div>
+
+    <div class="user-card">
+      <div class="avatar-frame">
+        <div class="avatar">V</div>
+      </div>
+      <div class="user-name">CIPHER // V</div>
+      <div class="user-handle">@netrunner_v · WATSON</div>
+      <div class="stat-bars">
+        <div class="stat-bar-row">
+          <div class="stat-bar-label">HP</div>
+          <div class="stat-bar-track"><div class="stat-bar-fill red" style="width:72%"></div></div>
+          <div class="stat-bar-val">72</div>
+        </div>
+        <div class="stat-bar-row">
+          <div class="stat-bar-label">RAM</div>
+          <div class="stat-bar-track"><div class="stat-bar-fill cyan" style="width:55%"></div></div>
+          <div class="stat-bar-val">55</div>
+        </div>
+        <div class="stat-bar-row">
+          <div class="stat-bar-label">REP</div>
+          <div class="stat-bar-track"><div class="stat-bar-fill" style="width:88%"></div></div>
+          <div class="stat-bar-val">88</div>
+        </div>
+        <div class="stat-bar-row">
+          <div class="stat-bar-label">STL</div>
+          <div class="stat-bar-track"><div class="stat-bar-fill" style="width:61%"></div></div>
+          <div class="stat-bar-val">61</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-list">
+      <div class="menu-section-label">// MAIN</div>
+      <div class="menu-item active">
+        <div class="menu-icon">◈</div>
+        <div class="menu-text">Overview</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon">◉</div>
+        <div class="menu-text">Missions</div>
+        <div class="menu-badge">3</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon">◌</div>
+        <div class="menu-text">Characters</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon">⬡</div>
+        <div class="menu-text">District Map</div>
+      </div>
+
+      <div class="menu-section-label">// SYSTEMS</div>
+      <div class="menu-item">
+        <div class="menu-icon">◧</div>
+        <div class="menu-text">Cyberware</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon">◫</div>
+        <div class="menu-text">Netrunner</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon">◪</div>
+        <div class="menu-text">Inventory</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon">◩</div>
+        <div class="menu-text">Braindance</div>
+        <div class="menu-badge">!</div>
+      </div>
+
+      <div class="menu-section-label">// NETWORK</div>
+      <div class="menu-item">
+        <div class="menu-icon">▷</div>
+        <div class="menu-text">Fixer Comms</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon">▶</div>
+        <div class="menu-text">Black Market</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-icon">▸</div>
+        <div class="menu-text">Settings</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <div class="content-header">
+      <div>
+        <div class="page-title glitch">DASHBOARD</div>
+        <div class="page-subtitle">// REALTIME OPERATIVE STATUS — WATSON DISTRICT</div>
+      </div>
+      <div class="header-controls">
+        <button class="btn btn-ghost">SYNC DATA</button>
+        <button class="btn btn-primary">NEW MISSION</button>
+      </div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">// EDDIES</div>
+        <div class="stat-value">₪ 84,230</div>
+        <div class="stat-delta">↑ +2,400 TODAY</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">// MISSIONS DONE</div>
+        <div class="stat-value cyan">147</div>
+        <div class="stat-delta">+3 THIS WEEK</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">// STREET CRED</div>
+        <div class="stat-value">LVL 38</div>
+        <div class="stat-delta">84% TO NEXT</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">// WANTED LEVEL</div>
+        <div class="stat-value red">★★☆☆☆</div>
+        <div class="stat-delta neg">MODERATE HEAT</div>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN -->
+    <div class="two-col">
+
+      <!-- MISSIONS PANEL -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">ACTIVE CONTRACTS</div>
+          <button class="btn btn-ghost" style="padding:4px 12px;font-size:10px;">VIEW ALL</button>
+        </div>
+        <div class="panel-body">
+          <div class="mission-list">
+            <div class="mission-item priority">
+              <div class="mission-dot urgent"></div>
+              <div class="mission-content">
+                <div class="mission-title">GHOST IN THE MACHINE</div>
+                <div class="mission-sub">MILITECH CORPOBLOCK · SECTOR 7</div>
+              </div>
+              <div class="mission-tag">URGENT</div>
+            </div>
+            <div class="mission-item active">
+              <div class="mission-dot active"></div>
+              <div class="mission-content">
+                <div class="mission-title">DATA HEIST // ARASAKA TOWER</div>
+                <div class="mission-sub">ROGUE FIXER · CITY CENTER</div>
+              </div>
+              <div class="mission-tag">MAIN</div>
+            </div>
+            <div class="mission-item">
+              <div class="mission-dot done"></div>
+              <div class="mission-content">
+                <div class="mission-title">FLATLINED // CORPO EXTRACTION</div>
+                <div class="mission-sub">EL CAPITAN · HEYWOOD</div>
+              </div>
+              <div class="mission-tag side">SIDE</div>
+            </div>
+            <div class="mission-item">
+              <div class="mission-dot"></div>
+              <div class="mission-content">
+                <div class="mission-title">CHROME & STEEL</div>
+                <div class="mission-sub">WAKAKO OKADA · JAPANTOWN</div>
+              </div>
+              <div class="mission-tag side">SIDE</div>
+            </div>
+            <div class="mission-item">
+              <div class="mission-dot"></div>
+              <div class="mission-content">
+                <div class="mission-title">SPECIAL OFFER // ALDECALDO RUN</div>
+                <div class="mission-sub">PANAM PALMER · BADLANDS</div>
+              </div>
+              <div class="mission-tag side">SIDE</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHART PANEL -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">EARNINGS OVERVIEW</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim)">LAST 7 DAYS</div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-container">
+            <div class="chart-grid">
+              <div class="chart-grid-line"></div>
+              <div class="chart-grid-line"></div>
+              <div class="chart-grid-line"></div>
+              <div class="chart-grid-line"></div>
+            </div>
+            <div class="chart-bars">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:45%;--delay:0.1s"></div>
+                <div class="chart-label">MON</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:62%;--delay:0.2s"></div>
+                <div class="chart-label">TUE</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar cyan" style="height:38%;--delay:0.3s"></div>
+                <div class="chart-label">WED</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:78%;--delay:0.4s"></div>
+                <div class="chart-label">THU</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar cyan" style="height:55%;--delay:0.5s"></div>
+                <div class="chart-label">FRI</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:90%;--delay:0.6s"></div>
+                <div class="chart-label">SAT</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:68%;--delay:0.7s"></div>
+                <div class="chart-label">SUN</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RING STATS -->
+          <div class="ring-container">
+            <div class="ring-wrap">
+              <div class="ring-pos">
+                <svg class="ring-svg" width="60" height="60" viewBox="0 0 60 60">
+                  <circle class="ring-bg" cx="30" cy="30" r="24" stroke-width="4"/>
+                  <circle class="ring-fg" cx="30" cy="30" r="24" stroke-width="4"
+                    stroke="var(--yellow)"
+                    stroke-dasharray="150.8"
+                    stroke-dashoffset="37.7"
+                    style="filter:drop-shadow(0 0 4px var(--yellow))"/>
+                </svg>
+                <div class="ring-center" style="color:var(--yellow)">75%</div>
+              </div>
+              <div class="ring-label">EFFICIENCY</div>
+            </div>
+            <div class="ring-wrap">
+              <div class="ring-pos">
+                <svg class="ring-svg" width="60" height="60" viewBox="0 0 60 60">
+                  <circle class="ring-bg" cx="30" cy="30" r="24" stroke-width="4"/>
+                  <circle class="ring-fg" cx="30" cy="30" r="24" stroke-width="4"
+                    stroke="var(--cyan)"
+                    stroke-dasharray="150.8"
+                    stroke-dashoffset="60.3"
+                    style="filter:drop-shadow(0 0 4px var(--cyan))"/>
+                </svg>
+                <div class="ring-center" style="color:var(--cyan)">60%</div>
+              </div>
+              <div class="ring-label">NETRUN</div>
+            </div>
+            <div class="ring-wrap">
+              <div class="ring-pos">
+                <svg class="ring-svg" width="60" height="60" viewBox="0 0 60 60">
+                  <circle class="ring-bg" cx="30" cy="30" r="24" stroke-width="4"/>
+                  <circle class="ring-fg" cx="30" cy="30" r="24" stroke-width="4"
+                    stroke="var(--red)"
+                    stroke-dasharray="150.8"
+                    stroke-dashoffset="105.6"
+                    style="filter:drop-shadow(0 0 4px var(--red))"/>
+                </svg>
+                <div class="ring-center" style="color:var(--red)">30%</div>
+              </div>
+              <div class="ring-label">THREAT</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="two-col">
+
+      <!-- ACTIVITY LOG -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">SYSTEM LOG</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--cyan);letter-spacing:2px;">LIVE</div>
+        </div>
+        <div class="panel-body">
+          <div class="log-list" id="log-list">
+            <div class="log-item">
+              <div class="log-time">03:44</div>
+              <div class="log-bar ok"></div>
+              <div class="log-text">Breach protocol executed on <span>MILITECH NODE #447</span> — 3 daemons extracted</div>
+            </div>
+            <div class="log-item">
+              <div class="log-time">03:41</div>
+              <div class="log-bar warn"></div>
+              <div class="log-text"><span class="red">ALERT:</span> NCPD scanner sweep detected — stealth mode engaged</div>
+            </div>
+            <div class="log-item">
+              <div class="log-time">03:38</div>
+              <div class="log-bar info"></div>
+              <div class="log-text">Payment received from <span class="cyan">WAKAKO OKADA</span> — ₪ 4,500 deposited</div>
+            </div>
+            <div class="log-item">
+              <div class="log-time">03:29</div>
+              <div class="log-bar ok"></div>
+              <div class="log-text">Fast travel to <span>JAPANTOWN · WESTBROOK</span> completed</div>
+            </div>
+            <div class="log-item">
+              <div class="log-time">03:14</div>
+              <div class="log-bar warn"></div>
+              <div class="log-text"><span class="red">TRAUMA TEAM</span> activated in sector — avoid zone for 12 min</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TERMINAL -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">NETRUN TERMINAL</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-danger" style="padding:4px 10px;font-size:9px">KILL</button>
+            <button class="btn btn-ghost" style="padding:4px 10px;font-size:9px">CLEAR</button>
+          </div>
+        </div>
+        <div class="panel-body" style="padding:0">
+          <div class="terminal" id="terminal">
+            <div class="terminal-line cmd">$ connect --target=arasaka.net --stealth</div>
+            <div class="terminal-line">Handshake initialized... ICE detected [lvl 3]</div>
+            <div class="terminal-line ok">✓ Siphon daemon deployed successfully</div>
+            <div class="terminal-line">Scanning for data shards... [████████░░] 80%</div>
+            <div class="terminal-line cmd">$ extract --payload=corp_intel --encrypt</div>
+            <div class="terminal-line err">✗ Watchdog daemon triggered — rerouting...</div>
+            <div class="terminal-line">Proxy chain: TK-7 → NC-3 → BD-9 → TARGET</div>
+            <div class="terminal-line ok">✓ Encryption handoff complete</div>
+            <span class="terminal-cursor"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MAP ROW -->
+    <div class="panel" style="margin-bottom:36px">
+      <div class="panel-header">
+        <div class="panel-title">DISTRICT MAP // WATSON</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim)">
+            <span style="color:var(--yellow)">◆</span> MISSION POINT &nbsp;
+            <span style="color:var(--red)">◆</span> THREAT ZONE &nbsp;
+            <span style="color:var(--cyan)">◆</span> SAFE HOUSE
+          </div>
+          <button class="btn btn-ghost" style="padding:4px 12px;font-size:10px">FULL MAP</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="mini-map">
+          <div class="map-grid"></div>
+
+          <!-- Buildings -->
+          <div class="map-block" style="left:10%;top:20%;width:15%;height:25%"></div>
+          <div class="map-block" style="left:30%;top:10%;width:8%;height:30%"></div>
+          <div class="map-block" style="left:50%;top:15%;width:20%;height:20%"></div>
+          <div class="map-block" style="left:75%;top:25%;width:12%;height:35%"></div>
+          <div class="map-block" style="left:15%;top:60%;width:18%;height:20%"></div>
+          <div class="map-block" style="left:55%;top:55%;width:22%;height:28%"></div>
+          <div class="map-block" style="left:40%;top:65%;width:10%;height:22%"></div>
+
+          <!-- Routes -->
+          <div class="map-route" style="left:28%;top:50%;width:20%;transform:rotate(-15deg)"></div>
+          <div class="map-route" style="left:46%;top:45%;width:15%;transform:rotate(20deg)"></div>
+
+          <!-- Mission pins -->
+          <div class="map-pin" style="left:38%;top:42%"></div>
+          <div class="map-pin" style="left:64%;top:58%;background:var(--cyan);box-shadow:0 0 12px var(--cyan)"></div>
+
+          <!-- Threats -->
+          <div class="map-threat" style="left:22%;top:55%"></div>
+          <div class="map-threat" style="left:70%;top:30%"></div>
+
+          <!-- Labels -->
+          <div class="map-label" style="left:2%;top:2%">NORTH WATSON</div>
+          <div class="map-label" style="left:2%;bottom:8%">KABUKI</div>
+          <div class="map-label" style="right:2%;top:2%">LITTLE CHINA</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel">
+    <div class="rp-header">OPERATIVE STATUS</div>
+
+    <!-- THREAT LEVEL -->
+    <div class="rp-section">
+      <div class="rp-label">// THREAT ASSESSMENT</div>
+      <div class="threat-display">
+        <div class="threat-num">02</div>
+        <div class="threat-info">
+          <div class="threat-level-text">MODERATE</div>
+          <div class="threat-sub">NCPD AWARENESS: ELEVATED</div>
+        </div>
+      </div>
+      <div class="threat-segments">
+        <div class="threat-seg filled"></div>
+        <div class="threat-seg filled"></div>
+        <div class="threat-seg"></div>
+        <div class="threat-seg"></div>
+        <div class="threat-seg"></div>
+      </div>
+    </div>
+
+    <!-- OPERATIVE DATA -->
+    <div class="rp-section">
+      <div class="rp-label">// OPERATIVE DATA</div>
+      <div class="data-field">
+        <div class="df-label">LOCATION</div>
+        <div class="df-value">WATSON / KABUKI</div>
+      </div>
+      <div class="data-field">
+        <div class="df-label">CURRENT FIXER</div>
+        <div class="df-value">WAKAKO OKADA</div>
+      </div>
+      <div class="data-field">
+        <div class="df-label">ACTIVE IMPLANTS</div>
+        <div class="df-value">14 / 22 SLOTS</div>
+      </div>
+    </div>
+
+    <!-- CONTACTS -->
+    <div class="rp-section" style="flex:1;overflow-y:auto">
+      <div class="rp-label">// FIXER NETWORK</div>
+      <div class="contact-list">
+        <div class="contact-item">
+          <div class="contact-avatar">WK</div>
+          <div>
+            <div class="contact-name">WAKAKO OKADA</div>
+            <div class="contact-role">FIXER // JAPANTOWN</div>
+          </div>
+          <div class="contact-status online"></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-avatar">RP</div>
+          <div>
+            <div class="contact-name">ROGUE AMENDIARES</div>
+            <div class="contact-role">FIXER // AFTERLIFE</div>
+          </div>
+          <div class="contact-status online"></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-avatar">PP</div>
+          <div>
+            <div class="contact-name">PANAM PALMER</div>
+            <div class="contact-role">ALDECALDOS // BADLANDS</div>
+          </div>
+          <div class="contact-status away"></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-avatar">JD</div>
+          <div>
+            <div class="contact-name">JUDY ALVAREZ</div>
+            <div class="contact-role">TECH // WATSON</div>
+          </div>
+          <div class="contact-status offline"></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-avatar">VT</div>
+          <div>
+            <div class="contact-name">VIKTOR VECTOR</div>
+            <div class="contact-role">RIPPERDOC // KABUKI</div>
+          </div>
+          <div class="contact-status online"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK INVENTORY -->
+    <div class="rp-section">
+      <div class="rp-label">// EQUIPPED GEAR</div>
+      <div class="inventory-grid">
+        <div class="inv-slot">
+          <div class="inv-rarity legendary"></div>
+          🔫
+          <div class="inv-count">∞</div>
+        </div>
+        <div class="inv-slot">
+          <div class="inv-rarity epic"></div>
+          🗡️
+        </div>
+        <div class="inv-slot">
+          <div class="inv-rarity rare"></div>
+          💊
+          <div class="inv-count">12</div>
+        </div>
+        <div class="inv-slot">
+          <div class="inv-rarity common"></div>
+          🧪
+          <div class="inv-count">5</div>
+        </div>
+        <div class="inv-slot">
+          <div class="inv-rarity legendary"></div>
+          ⚡
+        </div>
+        <div class="inv-slot">
+          <div class="inv-rarity rare"></div>
+          🛡️
+        </div>
+        <div class="inv-slot empty">·</div>
+        <div class="inv-slot empty">·</div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- BOTTOM STATUS BAR -->
+<div class="bottombar">
+  <div class="bottombar-item">SYS: <span>ONLINE</span></div>
+  <div class="bottombar-item">NET: <span>ENCRYPTED</span></div>
+  <div class="bottombar-item">ICE: <span>ACTIVE</span></div>
+  <div class="bottombar-item">PING: <span>12MS</span></div>
+  <div class="bottombar-item" style="margin-left:auto">BUILD: <span>v2.4.7-NIGHTLY</span></div>
+  <div class="bottombar-item">NODE: <span>NC-CORE-07</span></div>
+</div>
+
+<script>
+  // LIVE CLOCK
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // NAV LINKS
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  // MENU ITEMS
+  document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // TERMINAL TYPEWRITER
+  const terminalLines = [
+    { text: '$ ping --target=arasaka.net', cls: 'cmd', delay: 4000 },
+    { text: 'Response: 3ms — TARGET ONLINE', cls: '', delay: 5200 },
+    { text: '$ deploy --daemon=siphon_v3', cls: 'cmd', delay: 7000 },
+    { text: '✓ Daemon injected — ICE layer bypassed', cls: 'ok', delay: 8500 },
+    { text: 'Extracting encrypted payload...', cls: '', delay: 10000 },
+  ];
+
+  const terminal = document.getElementById('terminal');
+  const cursor = terminal.querySelector('.terminal-cursor');
+
+  terminalLines.forEach(({ text, cls, delay }) => {
+    setTimeout(() => {
+      const line = document.createElement('div');
+      line.className = `terminal-line ${cls}`;
+      line.textContent = text;
+      terminal.insertBefore(line, cursor);
+      terminal.scrollTop = terminal.scrollHeight;
+    }, delay);
+  });
+
+  // LIVE LOG
+  const logItems = [
+    { time: null, type: 'info', html: 'Netrunner connection to <span class="cyan">NORTH WATSON NODE</span> established' },
+    { time: null, type: 'ok', html: 'New contract from <span>ROGUE AMENDIARES</span> — ₪ 8,000 payout' },
+    { time: null, type: 'warn', html: '<span class="red">WARNING:</span> Arasaka drone sweep in sector D-4' },
+  ];
+
+  const logList = document.getElementById('log-list');
+  let logIndex = 0;
+
+  function addLog() {
+    if (logIndex >= logItems.length) return;
+    const item = logItems[logIndex++];
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    
+    const el = document.createElement('div');
+    el.className = 'log-item';
+    el.innerHTML = `
+      <div class="log-time">${h}:${m}</div>
+      <div class="log-bar ${item.type}"></div>
+      <div class="log-text">${item.html}</div>
+    `;
+    logList.prepend(el);
+    if (logList.children.length > 8) logList.removeChild(logList.lastChild);
+  }
+
+  setTimeout(() => addLog(), 6000);
+  setTimeout(() => addLog(), 11000);
+  setTimeout(() => addLog(), 17000);
+
+  // GLITCH RANDOM
+  const title = document.querySelector('.glitch');
+  setInterval(() => {
+    title.style.animation = 'none';
+    void title.offsetWidth;
+    title.style.animation = 'glitch 5s ease-in-out infinite';
+  }, 8000);
+</script>
+</body>
+</html>

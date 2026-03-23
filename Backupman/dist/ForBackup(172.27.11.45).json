@@ -1,0 +1,76 @@
+{
+    "Schedules": [
+        {
+            "id": "c135d8d4-1d18-4b80-8f91-3fdf88a57afc",
+            "name": "Local Backup (APPSVR) - Every 2 days",
+            "enabled": 0,
+            "source_path": "\\\\172.27.11.45\\Public_Folder\\APPSVR",
+            "source_type": "network",
+            "source_cred_id": null,
+            "schedule_type": "interval",
+            "schedule_config": {
+                "days": 2
+            },
+            "delete_old": 0,
+            "created_at": "2026-03-19T05:40:24.762656",
+            "updated_at": "2026-03-19T07:28:13.430183",
+            "last_run": "2026-03-19T07:28:17.875528",
+            "next_run": "2026-03-21T13:40:45.734512+08:00",
+            "status": "running",
+            "destinations": [
+                {
+                    "id": "88a708a7-98de-4cc7-9770-2c66f65dc23f",
+                    "schedule_id": "c135d8d4-1d18-4b80-8f91-3fdf88a57afc",
+                    "dest_path": "C:\\Backup",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "{source_name}_{date}",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 1
+                }
+            ]
+        }
+    ],
+    "Credentials": [
+        {
+            "id": "70d7e71f-9064-474b-9d89-bf0c5d17d161",
+            "label": "MIS OJT",
+            "server": "\\\\172.27.11.45\\Public_Folder",
+            "username": "inland\\mis.ojt",
+            "password_b64": "aW5sQG5kMTIz",
+            "created_at": "2026-03-19T05:35:19.245514"
+        }
+    ],
+    "RunHistory": [
+        {
+            "id": "bb56399a-e09e-4d6e-a448-e143d00de583",
+            "schedule_id": "c135d8d4-1d18-4b80-8f91-3fdf88a57afc",
+            "started_at": "2026-03-19T05:44:06.977455",
+            "finished_at": null,
+            "status": "running",
+            "bytes_copied": null,
+            "error_msg": null,
+            "triggered_by": "manual"
+        },
+        {
+            "id": "478be26e-1a41-4133-b3b1-5c0897512e1c",
+            "schedule_id": "c135d8d4-1d18-4b80-8f91-3fdf88a57afc",
+            "started_at": "2026-03-19T07:28:17.875528",
+            "finished_at": null,
+            "status": "running",
+            "bytes_copied": null,
+            "error_msg": null,
+            "triggered_by": "manual"
+        }
+    ],
+    "RunDestinations": [],
+    "MissedRuns": [],
+    "Total Schedules": 1,
+    "Enabled": 0,
+    "Total Runs": 2,
+    "Successful": 0,
+    "Errors": 0,
+    "Running Now": 2,
+    "Missed / Pending": 0
+}

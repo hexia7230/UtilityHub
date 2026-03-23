@@ -1,0 +1,188 @@
+{
+    "Schedules": [
+        {
+            "id": "diff-1",
+            "name": "Differential Morning Backup",
+            "enabled": 1,
+            "source_path": "C:\\Data",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "daily",
+            "schedule_config": {
+                "hour": 0,
+                "minute": 0
+            },
+            "delete_old": 0,
+            "created_at": "2026-03-19T05:00:00",
+            "updated_at": "2026-03-19T05:00:00",
+            "last_run": null,
+            "next_run": "2026-03-24T00:00:00+00:00",
+            "status": "idle",
+            "destinations": [
+                {
+                    "id": "d1",
+                    "schedule_id": "diff-1",
+                    "dest_path": "\\\\BlackArmor1\\Backup",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "DIFF_{datetime}",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 0
+                },
+                {
+                    "id": "d2",
+                    "schedule_id": "diff-1",
+                    "dest_path": "\\\\QNAP\\Backup",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "DIFF_{datetime}",
+                    "ext": "",
+                    "sort_order": 1,
+                    "compress_zip": 0
+                }
+            ]
+        },
+        {
+            "id": "diff-2",
+            "name": "Differential Noon Backup",
+            "enabled": 1,
+            "source_path": "C:\\Data",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "daily",
+            "schedule_config": {
+                "hour": 12,
+                "minute": 0
+            },
+            "delete_old": 0,
+            "created_at": "2026-03-19T05:10:00",
+            "updated_at": "2026-03-19T05:10:00",
+            "last_run": null,
+            "next_run": "2026-03-23T12:00:00+00:00",
+            "status": "idle",
+            "destinations": [
+                {
+                    "id": "d3",
+                    "schedule_id": "diff-2",
+                    "dest_path": "\\\\BlackArmor2\\Backup",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "DIFF_NOON_{datetime}",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 0
+                }
+            ]
+        },
+        {
+            "id": "diff-3",
+            "name": "Differential Evening Backup",
+            "enabled": 1,
+            "source_path": "C:\\Data",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "daily",
+            "schedule_config": {
+                "hour": 19,
+                "minute": 0
+            },
+            "delete_old": 0,
+            "created_at": "2026-03-19T05:20:00",
+            "updated_at": "2026-03-19T05:20:00",
+            "last_run": "2026-03-23T01:45:15.556209",
+            "next_run": "2026-03-23T19:00:00+00:00",
+            "status": "error",
+            "destinations": [
+                {
+                    "id": "d4",
+                    "schedule_id": "diff-3",
+                    "dest_path": "\\\\QNAP\\Backup",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "DIFF_EVENING_{datetime}",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 0
+                }
+            ]
+        },
+        {
+            "id": "full-1",
+            "name": "Weekly Full Backup (All Layers)",
+            "enabled": 1,
+            "source_path": "C:\\Data",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "weekly",
+            "schedule_config": {
+                "hour": 0,
+                "minute": 0,
+                "weekday": 1
+            },
+            "delete_old": 1,
+            "created_at": "2026-03-19T05:30:00",
+            "updated_at": "2026-03-19T05:30:00",
+            "last_run": null,
+            "next_run": "2026-03-30T00:00:00+00:00",
+            "status": "idle",
+            "destinations": [
+                {
+                    "id": "d5",
+                    "schedule_id": "full-1",
+                    "dest_path": "\\\\BlackArmor1\\Full",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "FULL_{date}",
+                    "ext": ".bak",
+                    "sort_order": 0,
+                    "compress_zip": 1
+                },
+                {
+                    "id": "d6",
+                    "schedule_id": "full-1",
+                    "dest_path": "\\\\QNAP\\Full",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "FULL_{date}",
+                    "ext": ".bak",
+                    "sort_order": 1,
+                    "compress_zip": 1
+                },
+                {
+                    "id": "d7",
+                    "schedule_id": "full-1",
+                    "dest_path": "E:\\OfflineBackup",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "OFFLINE_FULL_{date}",
+                    "ext": ".zip",
+                    "sort_order": 2,
+                    "compress_zip": 1
+                }
+            ]
+        }
+    ],
+    "Credentials": [],
+    "RunHistory": [
+        {
+            "id": "57753c4f-1447-4067-bc57-f7b884662fa2",
+            "schedule_id": "diff-3",
+            "started_at": "2026-03-23T01:45:15.556209",
+            "finished_at": "2026-03-23T01:45:15.558141",
+            "status": "error",
+            "bytes_copied": null,
+            "error_msg": "Source connection failed: Path not found: C:\\Data",
+            "triggered_by": "manual"
+        }
+    ],
+    "RunDestinations": [],
+    "MissedRuns": [],
+    "Total Schedules": 4,
+    "Enabled": 4,
+    "Total Runs": 1,
+    "Successful": 0,
+    "Errors": 1,
+    "Running Now": 0,
+    "Missed / Pending": 0
+}

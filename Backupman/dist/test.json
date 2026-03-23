@@ -1,0 +1,362 @@
+{
+    "Schedules": [
+        {
+            "id": "s1",
+            "name": "Daily Simple test1→test2",
+            "enabled": 1,
+            "source_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "daily",
+            "schedule_config": {
+                "hour": 1,
+                "minute": 0
+            },
+            "delete_old": 0,
+            "created_at": "2026-03-19T04:00:00",
+            "updated_at": "2026-03-19T04:00:00",
+            "last_run": null,
+            "next_run": "2026-03-24T01:00:00+00:00",
+            "status": "idle",
+            "destinations": [
+                {
+                    "id": "d1",
+                    "schedule_id": "s1",
+                    "dest_path": "C:\\Users\\OJT\\Desktop\\test2",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 0
+                }
+            ]
+        },
+        {
+            "id": "s2",
+            "name": "Daily ZIP Backup",
+            "enabled": 1,
+            "source_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "daily",
+            "schedule_config": {
+                "hour": 2,
+                "minute": 30
+            },
+            "delete_old": 1,
+            "created_at": "2026-03-19T04:05:00",
+            "updated_at": "2026-03-19T04:05:00",
+            "last_run": null,
+            "next_run": "2026-03-24T02:30:00+00:00",
+            "status": "idle",
+            "destinations": [
+                {
+                    "id": "d2",
+                    "schedule_id": "s2",
+                    "dest_path": "C:\\Users\\OJT\\Desktop\\test2",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "ZIP_{source_name}_{datetime}.zip",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 1
+                }
+            ]
+        },
+        {
+            "id": "s3",
+            "name": "Weekly Multi Destination",
+            "enabled": 1,
+            "source_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "weekly",
+            "schedule_config": {
+                "hour": 3,
+                "minute": 0,
+                "weekday": 1
+            },
+            "delete_old": 0,
+            "created_at": "2026-03-19T04:10:00",
+            "updated_at": "2026-03-19T04:10:00",
+            "last_run": null,
+            "next_run": "2026-03-30T03:00:00+00:00",
+            "status": "idle",
+            "destinations": [
+                {
+                    "id": "d31",
+                    "schedule_id": "s3",
+                    "dest_path": "C:\\Users\\OJT\\Desktop\\test2",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 0
+                },
+                {
+                    "id": "d32",
+                    "schedule_id": "s3",
+                    "dest_path": "C:\\Users\\OJT\\Desktop\\test3",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "WEEK_{datetime}",
+                    "ext": "",
+                    "sort_order": 1,
+                    "compress_zip": 0
+                },
+                {
+                    "id": "d33",
+                    "schedule_id": "s3",
+                    "dest_path": "C:\\Users\\OJT\\Desktop\\test4",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "",
+                    "ext": "",
+                    "sort_order": 2,
+                    "compress_zip": 1
+                }
+            ]
+        },
+        {
+            "id": "s4",
+            "name": "Monthly Archive Backup",
+            "enabled": 1,
+            "source_path": "C:\\Users\\OJT\\Desktop\\test2",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "monthly",
+            "schedule_config": {
+                "hour": 4,
+                "minute": 0,
+                "day": 1
+            },
+            "delete_old": 1,
+            "created_at": "2026-03-19T04:20:00",
+            "updated_at": "2026-03-19T04:20:00",
+            "last_run": null,
+            "next_run": "2026-04-01T04:00:00+00:00",
+            "status": "idle",
+            "destinations": [
+                {
+                    "id": "d41",
+                    "schedule_id": "s4",
+                    "dest_path": "C:\\Users\\OJT\\Desktop\\test4",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "ARCHIVE_{date}.bak",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 1
+                }
+            ]
+        },
+        {
+            "id": "s5",
+            "name": "Reverse Backup test4→test1",
+            "enabled": 1,
+            "source_path": "C:\\Users\\OJT\\Desktop\\test4",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "daily",
+            "schedule_config": {
+                "hour": 5,
+                "minute": 15
+            },
+            "delete_old": 0,
+            "created_at": "2026-03-19T04:30:00",
+            "updated_at": "2026-03-19T04:30:00",
+            "last_run": "2026-03-23T02:21:32.146627",
+            "next_run": "2026-03-23T05:15:00+00:00",
+            "status": "success",
+            "destinations": [
+                {
+                    "id": "d51",
+                    "schedule_id": "s5",
+                    "dest_path": "C:\\Users\\OJT\\Desktop\\test1",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "REV_{source_name}",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 0
+                }
+            ]
+        },
+        {
+            "id": "s6",
+            "name": "Disabled Test",
+            "enabled": 0,
+            "source_path": "C:\\Users\\OJT\\Desktop\\test3",
+            "source_type": "local",
+            "source_cred_id": null,
+            "schedule_type": "daily",
+            "schedule_config": {
+                "hour": 6,
+                "minute": 0
+            },
+            "delete_old": 0,
+            "created_at": "2026-03-19T04:40:00",
+            "updated_at": "2026-03-19T04:40:00",
+            "last_run": null,
+            "next_run": null,
+            "status": "idle",
+            "destinations": [
+                {
+                    "id": "d61",
+                    "schedule_id": "s6",
+                    "dest_path": "C:\\Users\\OJT\\Desktop\\test2",
+                    "dest_type": "local",
+                    "dest_cred_id": null,
+                    "name_template": "",
+                    "ext": "",
+                    "sort_order": 0,
+                    "compress_zip": 0
+                }
+            ]
+        }
+    ],
+    "Credentials": [
+        {
+            "id": "66c00f01-0565-4eff-8c0f-f2311858c736",
+            "label": "MIS",
+            "server": "\\\\172.27.11.45\\Public_Folder",
+            "username": "inland\\mis.ojt",
+            "password_b64": "aW5sQG5kMTIz",
+            "created_at": "2026-03-19T05:14:01.706800"
+        }
+    ],
+    "RunHistory": [
+        {
+            "id": "4d9b4369-70f0-4413-be03-a706316316ed",
+            "schedule_id": "s5",
+            "started_at": "2026-03-19T05:15:00.037342",
+            "finished_at": "2026-03-19T05:15:03.087106",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null,
+            "triggered_by": "scheduler"
+        },
+        {
+            "id": "2b35f12d-49bb-4b3c-b5fe-66006f8f767b",
+            "schedule_id": "s5",
+            "started_at": "2026-03-23T01:45:44.592761",
+            "finished_at": "2026-03-23T01:45:47.207010",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null,
+            "triggered_by": "manual"
+        },
+        {
+            "id": "511f8dcb-af69-4477-818b-c7b4c46d9412",
+            "schedule_id": "s5",
+            "started_at": "2026-03-23T02:00:23.413503",
+            "finished_at": "2026-03-23T02:00:25.555557",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null,
+            "triggered_by": "manual"
+        },
+        {
+            "id": "75032ed1-a1be-4e02-bc77-cd211fc24123",
+            "schedule_id": "s5",
+            "started_at": "2026-03-23T02:05:08.319484",
+            "finished_at": "2026-03-23T02:05:10.310488",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null,
+            "triggered_by": "manual"
+        },
+        {
+            "id": "1d738420-560a-48d3-a61b-3c1726a50d7f",
+            "schedule_id": "s5",
+            "started_at": "2026-03-23T02:10:31.330642",
+            "finished_at": "2026-03-23T02:10:35.142933",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null,
+            "triggered_by": "manual"
+        },
+        {
+            "id": "7657e329-de09-4879-a2ea-375e966a30fa",
+            "schedule_id": "s5",
+            "started_at": "2026-03-23T02:21:32.146627",
+            "finished_at": "2026-03-23T02:21:33.996342",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null,
+            "triggered_by": "manual"
+        }
+    ],
+    "RunDestinations": [
+        {
+            "id": "893b0cb4-e8ef-4866-bd06-6ad20cf10de2",
+            "run_id": "4d9b4369-70f0-4413-be03-a706316316ed",
+            "dest_id": "d51",
+            "dest_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "output_name": "REV_test4",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null
+        },
+        {
+            "id": "061b0591-d445-4fe2-b907-7a3c2cd5bd45",
+            "run_id": "2b35f12d-49bb-4b3c-b5fe-66006f8f767b",
+            "dest_id": "d51",
+            "dest_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "output_name": "REV_test4",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null
+        },
+        {
+            "id": "b71cb77a-0ca2-4121-a7f2-487bf3912d3e",
+            "run_id": "511f8dcb-af69-4477-818b-c7b4c46d9412",
+            "dest_id": "d51",
+            "dest_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "output_name": "REV_test4",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null
+        },
+        {
+            "id": "906e7ef8-79fb-4ffc-854e-3acb36256f89",
+            "run_id": "75032ed1-a1be-4e02-bc77-cd211fc24123",
+            "dest_id": "d51",
+            "dest_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "output_name": "REV_test4",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null
+        },
+        {
+            "id": "e2de1a94-c599-4a86-b466-844a8d0b50ab",
+            "run_id": "1d738420-560a-48d3-a61b-3c1726a50d7f",
+            "dest_id": "d51",
+            "dest_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "output_name": "REV_test4",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null
+        },
+        {
+            "id": "5c30bce9-96df-403d-b3b1-8c161472274d",
+            "run_id": "7657e329-de09-4879-a2ea-375e966a30fa",
+            "dest_id": "d51",
+            "dest_path": "C:\\Users\\OJT\\Desktop\\test1",
+            "output_name": "REV_test4",
+            "status": "success",
+            "bytes_copied": 129926485,
+            "error_msg": null
+        }
+    ],
+    "MissedRuns": [],
+    "Total Schedules": 6,
+    "Enabled": 5,
+    "Total Runs": 6,
+    "Successful": 6,
+    "Errors": 0,
+    "Running Now": 0,
+    "Missed / Pending": 0
+}
