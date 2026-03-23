@@ -1,0 +1,212 @@
+{
+    "companies": [
+        {
+            "name": "ADR Holdings",
+            "code": "AR"
+        },
+        {
+            "name": "Inland Airfreight and Logistic Division",
+            "code": "IA"
+        },
+        {
+            "name": "Inland Corporation",
+            "code": "IC"
+        },
+        {
+            "name": "Inland Corporation Project and Heavy Lift",
+            "code": "PH"
+        },
+        {
+            "name": "Inland Warehousing and Logistics Division",
+            "code": "IW"
+        },
+        {
+            "name": "SB Inland Corporation",
+            "code": "SB"
+        },
+        {
+            "name": "Technofreeze, Inc.",
+            "code": "TF"
+        }
+    ],
+    "units": [
+        {
+            "name": "Accounting",
+            "code": "A1"
+        },
+        {
+            "name": "Audit",
+            "code": "A2"
+        },
+        {
+            "name": "ADRH",
+            "code": "A3"
+        },
+        {
+            "name": "Brokerage",
+            "code": "B1"
+        },
+        {
+            "name": "Building Maintenance",
+            "code": "B2"
+        },
+        {
+            "name": "Common",
+            "code": "C1"
+        },
+        {
+            "name": "Container Yard",
+            "code": "C2"
+        },
+        {
+            "name": "Contract Logistics",
+            "code": "C3"
+        },
+        {
+            "name": "Forwarding",
+            "code": "F1"
+        },
+        {
+            "name": "Human Resources",
+            "code": "H1"
+        },
+        {
+            "name": "Maintenance",
+            "code": "M1"
+        },
+        {
+            "name": "Management Information Systems",
+            "code": "M2"
+        },
+        {
+            "name": "Office of the President",
+            "code": "O1"
+        },
+        {
+            "name": "Operations",
+            "code": "O2"
+        },
+        {
+            "name": "OpEx",
+            "code": "O3"
+        },
+        {
+            "name": "Parts Trading",
+            "code": "P1"
+        },
+        {
+            "name": "Procurement",
+            "code": "P2"
+        },
+        {
+            "name": "Safety and Security",
+            "code": "S1"
+        },
+        {
+            "name": "Sales and Business Development",
+            "code": "S2"
+        },
+        {
+            "name": "Strategic Operation and Procurement",
+            "code": "S3"
+        },
+        {
+            "name": "Trucking",
+            "code": "T1"
+        }
+    ],
+    "sites": [
+        {
+            "name": "Batangueno",
+            "code": "B1"
+        },
+        {
+            "name": "Bulacan",
+            "code": "B2"
+        },
+        {
+            "name": "Cagayan De Oro Garage",
+            "code": "C1"
+        },
+        {
+            "name": "Cagayan De Oro Nestle Factory",
+            "code": "C2"
+        },
+        {
+            "name": "Cagayan De Oro Office",
+            "code": "C3"
+        },
+        {
+            "name": "Canlubang Factory Genpacco",
+            "code": "C3"
+        },
+        {
+            "name": "Canlubang Factory Wyeth",
+            "code": "C4"
+        },
+        {
+            "name": "Cebu Garage",
+            "code": "C5"
+        },
+        {
+            "name": "Cebu Office",
+            "code": "C6"
+        },
+        {
+            "name": "Davao Office",
+            "code": "D1"
+        },
+        {
+            "name": "Davao Warehouse",
+            "code": "D2"
+        },
+        {
+            "name": "DHL",
+            "code": "D3"
+        },
+        {
+            "name": "Head Office",
+            "code": "H1"
+        },
+        {
+            "name": "Laguna",
+            "code": "L1"
+        },
+        {
+            "name": "Lancaster",
+            "code": "L2"
+        },
+        {
+            "name": "Lipa Factory",
+            "code": "L3"
+        },
+        {
+            "name": "Pier 18",
+            "code": "P1"
+        },
+        {
+            "name": "Pulo",
+            "code": "P2"
+        },
+        {
+            "name": "Paranaque",
+            "code": "P3"
+        },
+        {
+            "name": "Subic",
+            "code": "S1"
+        },
+        {
+            "name": "Sucat",
+            "code": "S2"
+        },
+        {
+            "name": "Tanauan Factory",
+            "code": "T1"
+        },
+        {
+            "name": "Zamboanga",
+            "code": "Z1"
+        }
+    ]
+}

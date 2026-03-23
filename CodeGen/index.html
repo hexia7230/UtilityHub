@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeGen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #e8000a;
+            --red-dim: #8b0006;
+            --red-glow: rgba(232,0,10,0.4);
+            --red-faint: rgba(232,0,10,0.08);
+            --white: #e8e8e8;
+            --gray: #5a5a5a;
+            --gray-light: #8a8a8a;
+            --bg: #080808;
+            --bg2: #0d0d0d;
+            --bg3: #111;
+            --border: rgba(232,0,10,0.3);
+            --border-dim: rgba(90,90,90,0.25);
+        }
+        body {
+            background: var(--bg); color: var(--white); font-family: 'Rajdhani', sans-serif;
+            margin: 0; padding: 0; min-height: 100vh; overflow: hidden; display: flex;
+            cursor: default; user-select: none;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+            pointer-events: none; z-index: 9999;
+        }
+        body::after {
+            content: ''; position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 9998; opacity: 0.4;
+        }
+
+        .sidebar {
+            width: 220px; background: var(--bg2); border-right: 1px solid var(--border-dim);
+            display: flex; flex-direction: column; padding: 20px 0; z-index: 10;
+        }
+        .main {
+            flex: 1; padding: 30px; overflow-y: auto; background: var(--bg); z-index: 10;
+        }
+        .logo {
+            text-align: center; font-family: 'Orbitron', monospace; color: var(--red);
+            font-size: 22px; font-weight: 900; letter-spacing: 4px; margin-bottom: 30px;
+            text-shadow: 0 0 10px var(--red-glow);
+        }
+        .nav-item {
+            padding: 12px 20px; font-family: 'Share Tech Mono', monospace; font-size: 14px;
+            color: var(--gray-light); cursor: pointer; transition: 0.2s; border-left: 3px solid transparent;
+            letter-spacing: 1px;
+        }
+        .nav-item:hover { background: var(--red-faint); color: var(--white); }
+        .nav-item.active { background: rgba(232,0,10,0.12); color: var(--red); border-left-color: var(--red); }
+        
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        h1 { font-family: 'Orbitron', monospace; font-size: 24px; color: var(--white); border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase;}
+        
+        .form-group { margin-bottom: 20px; }
+        label { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--red); display: block; margin-bottom: 8px; letter-spacing: 1px; }
+        select, input[type="text"] {
+            width: 100%; max-width: 400px; padding: 10px 14px; background: var(--bg3); border: 1px solid var(--border-dim);
+            color: var(--white); font-family: 'Rajdhani', sans-serif; font-size: 16px; outline: none; box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        select:focus, input[type="text"]:focus { border-color: var(--red); }
+        
+        button {
+            background: rgba(232,0,10,0.1); border: 1px solid var(--red); color: var(--red);
+            font-family: 'Share Tech Mono', monospace; font-size: 14px; padding: 10px 24px;
+            cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 0 5px var(--red-glow);
+        }
+        button:hover { background: var(--red); color: var(--bg); box-shadow: 0 0 15px var(--red-glow); font-weight: bold; }
+        
+        .result-box {
+            margin-top: 25px; padding: 20px; background: rgba(0, 255, 157, 0.05);
+            border: 1px solid rgba(0, 255, 157, 0.3); color: #00ff9d;
+            font-family: 'Orbitron', monospace; font-size: 20px; font-weight: bold;
+            display: none; align-items: center; justify-content: space-between;
+            max-width: 400px; box-sizing: border-box;
+        }
+        
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .data-col { background: var(--bg3); border: 1px solid var(--border-dim); padding: 15px; height: 450px; display: flex; flex-direction: column;}
+        .data-header { font-family: 'Share Tech Mono', monospace; color: var(--red); font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; letter-spacing: 2px;}
+        .data-list { flex: 1; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
+        .data-list::-webkit-scrollbar { width: 6px; }
+        .data-list::-webkit-scrollbar-thumb { background: var(--border-dim); }
+        .data-item { display: flex; justify-content: space-between; padding: 8px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 15px; }
+        .data-item:hover { background: rgba(255,255,255,0.02); }
+        .data-item .code { color: var(--gray-light); font-family: 'Share Tech Mono', monospace; font-size: 12px;}
+        .data-item .delete-btn { color: var(--red); cursor: pointer; font-size: 14px; font-weight: bold; padding: 0 5px; }
+        .data-item .delete-btn:hover { background: var(--red); color: var(--white); }
+        
+        .add-form { display: flex; gap: 8px; flex-direction: column; border-top: 1px solid var(--border-dim); padding-top: 15px;}
+        .add-form input { padding: 8px; font-size: 14px; width: 100%; max-width: none; }
+        .add-form button { padding: 8px; font-size: 14px; width: 100%; }
+        
+        .lookup-res { background:var(--bg3); padding: 20px; border-left: 3px solid var(--red); max-width: 400px; margin-top: 25px; display: none; }
+        .lookup-row { color:var(--gray-light); margin-bottom: 10px; font-size: 16px; font-family: 'Share Tech Mono', monospace; }
+        .lookup-val { color:var(--white); font-weight: bold; font-family: 'Rajdhani', sans-serif;}
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">CODEGEN</div>
+        <div class="nav-item active" onclick="switchTab('generate')">GENERATE PC ID</div>
+        <div class="nav-item" onclick="switchTab('reverse')">REVERSE LOOKUP</div>
+        <div class="nav-item" onclick="switchTab('manage')">MANAGE DATA</div>
+    </div>
+    <div class="main">
+        <!-- GENERATE PC ID -->
+        <div id="generate" class="section active">
+            <h1>GENERATE PC ID</h1>
+            <div class="form-group">
+                <label>COMPANY</label>
+                <select id="gen-company"></select>
+            </div>
+            <div class="form-group">
+                <label>BUSINESS UNIT</label>
+                <select id="gen-unit"></select>
+            </div>
+            <div class="form-group">
+                <label>SITE</label>
+                <select id="gen-site"></select>
+            </div>
+            <button onclick="generateId()">Generate & Copy</button>
+            <div id="gen-result" class="result-box">
+                <span id="gen-result-text"></span>
+                <button style="border-color:#00ff9d; color:#00ff9d; background: transparent; padding: 5px 10px; font-size: 12px; box-shadow: none;" onclick="copyResult()">COPY</button>
+            </div>
+        </div>
+        
+        <!-- REVERSE LOOKUP -->
+        <div id="reverse" class="section">
+            <h1>REVERSE LOOKUP</h1>
+            <div class="form-group">
+                <label>HOSTNAME / PC ID (Auto-detects current if empty)</label>
+                <input type="text" id="rev-hostname" placeholder="e.g. ARA1B11234567">
+            </div>
+            <button onclick="reverseLookup()">Lookup</button>
+            <div id="rev-result" class="lookup-res"></div>
+        </div>
+        
+        <!-- MANAGE DATA -->
+        <div id="manage" class="section">
+            <h1>MANAGE DATA</h1>
+            <div class="data-grid">
+                <!-- Companies -->
+                <div class="data-col">
+                    <div class="data-header">COMPANIES</div>
+                    <div class="data-list" id="list-companies"></div>
+                    <div class="add-form">
+                        <input type="text" id="add-company-name" placeholder="Name">
+                        <input type="text" id="add-company-code" placeholder="Code (e.g. AR)">
+                        <button onclick="addData('companies')">ADD COMPANY</button>
+                    </div>
+                </div>
+                <!-- Units -->
+                <div class="data-col">
+                    <div class="data-header">BUSINESS UNITS</div>
+                    <div class="data-list" id="list-units"></div>
+                    <div class="add-form">
+                        <input type="text" id="add-unit-name" placeholder="Name">
+                        <input type="text" id="add-unit-code" placeholder="Code (e.g. A1)">
+                        <button onclick="addData('units')">ADD UNIT</button>
+                    </div>
+                </div>
+                <!-- Sites -->
+                <div class="data-col">
+                    <div class="data-header">SITES</div>
+                    <div class="data-list" id="list-sites"></div>
+                    <div class="add-form">
+                        <input type="text" id="add-site-name" placeholder="Name">
+                        <input type="text" id="add-site-code" placeholder="Code (e.g. B1)">
+                        <button onclick="addData('sites')">ADD SITE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let appData = { companies: [], units: [], sites: [] };
+        
+        function switchTab(tabId) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            if (tabId === 'reverse') {
+                if(window.pywebview && window.pywebview.api && !document.getElementById('rev-hostname').value) {
+                    window.pywebview.api.get_hostname().then(host => {
+                        document.getElementById('rev-hostname').value = host;
+                    });
+                }
+            }
+        }
+        
+        function renderDropdowns() {
+            const renderSel = (id, data) => {
+                const sel = document.getElementById(id);
+                sel.innerHTML = data.map(item => `<option value="${item.code}">${item.name} (${item.code})</option>`).join('');
+            };
+            renderSel('gen-company', appData.companies);
+            renderSel('gen-unit', appData.units);
+            renderSel('gen-site', appData.sites);
+        }
+        
+        function renderLists() {
+            const renderList = (id, cat) => {
+                const list = document.getElementById(id);
+                list.innerHTML = appData[cat].map((item, i) => `
+                    <div class="data-item">
+                        <span>${item.name} <span class="code">[${item.code}]</span></span>
+                        <span class="delete-btn" onclick="deleteData('${cat}', ${i})">X</span>
+                    </div>
+                `).join('');
+            };
+            renderList('list-companies', 'companies');
+            renderList('list-units', 'units');
+            renderList('list-sites', 'sites');
+        }
+        
+        window.addEventListener('pywebviewready', function() {
+            loadData();
+        });
+        
+        function loadData() {
+            if(window.pywebview && window.pywebview.api) {
+                window.pywebview.api.get_data().then(data => {
+                    appData = data;
+                    renderDropdowns();
+                    renderLists();
+                });
+            } else {
+                setTimeout(loadData, 100);
+            }
+        }
+        
+        function generateId() {
+            const cc = document.getElementById('gen-company').value;
+            const uc = document.getElementById('gen-unit').value;
+            const sc = document.getElementById('gen-site').value;
+            
+            if (!cc || !uc || !sc) return;
+
+            window.pywebview.api.generate_id(cc, uc, sc).then(res => {
+                document.getElementById('gen-result-text').innerText = res;
+                document.getElementById('gen-result').style.display = 'flex';
+                window.pywebview.api.copy_to_clipboard(res);
+            });
+        }
+        
+        function copyResult() {
+            const text = document.getElementById('gen-result-text').innerText;
+            window.pywebview.api.copy_to_clipboard(text);
+        }
+        
+        function reverseLookup() {
+            let input = document.getElementById('rev-hostname').value.trim();
+            if(!input) return;
+            
+            if(input.length < 6) {
+                alert("Hostname too short to decode.");
+                return;
+            }
+            const cc = input.substring(0, 2);
+            const uc = input.substring(2, 4);
+            const sc = input.substring(4, 6);
+            const serial = input.substring(6);
+            
+            const findName = (cat, code) => {
+                const f = appData[cat].find(x => x.code.toUpperCase() === code.toUpperCase());
+                return f ? f.name : "Unknown";
+            };
+            
+            const html = `
+                <div class="lookup-row">COMPANY: <span class="lookup-val">${findName('companies', cc)} (${cc})</span></div>
+                <div class="lookup-row">UNIT: <span class="lookup-val">${findName('units', uc)} (${uc})</span></div>
+                <div class="lookup-row">SITE: <span class="lookup-val">${findName('sites', sc)} (${sc})</span></div>
+                <div class="lookup-row">SERIAL: <span class="lookup-val">${serial || "N/A"}</span></div>
+            `;
+            const rDiv = document.getElementById('rev-result');
+            rDiv.innerHTML = html;
+            rDiv.style.display = 'block';
+        }
+        
+        function addData(cat) {
+            let nInput, cInput;
+            if(cat==='companies') { nInput='add-company-name'; cInput='add-company-code'; }
+            else if(cat==='units') { nInput='add-unit-name'; cInput='add-unit-code'; }
+            else if(cat==='sites') { nInput='add-site-name'; cInput='add-site-code'; }
+            
+            const nameEl = document.getElementById(nInput);
+            const codeEl = document.getElementById(cInput);
+            const name = nameEl.value.trim();
+            const code = codeEl.value.trim();
+            
+            if(name && code) {
+                window.pywebview.api.add_item(cat, name, code).then(success => {
+                    if(success) {
+                        nameEl.value = ''; codeEl.value = '';
+                        loadData();
+                    }
+                });
+            }
+        }
+        
+        function deleteData(cat, index) {
+            if(confirm("Delete this item?")) {
+                window.pywebview.api.delete_item(cat, index).then(success => {
+                    if(success) loadData();
+                });
+            }
+        }
+    </script>
+</body>
+</html>
